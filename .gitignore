@@ -1,8 +1,8 @@
-env/
-.env
+
 .idea/
 idea/
-
+logs
+ScholarScore___Student_Marks_Detector_Indicator.egg-info
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
