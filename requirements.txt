@@ -2,3 +2,6 @@ pandas
 seaborn
 numpy
 -e .
+sklearn
+xgboost
+catboost
