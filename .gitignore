@@ -3,7 +3,6 @@
 idea/
 logs
 ScholarScore___Student_Marks_Detector_Indicator.egg-info
-.artifacts
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
