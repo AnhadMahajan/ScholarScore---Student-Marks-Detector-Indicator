@@ -1,1 +1,665 @@
-welcome
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarScore - AI-Powered Student Performance Prediction</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Background Animation */
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 0;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Main Content */
+        main {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 40px 40px;
+        }
+
+        .hero-section {
+            text-align: center;
+            max-width: 900px;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .hero-subtitle {
+            font-size: 1.4rem;
+            color: #b0b0b0;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: #888;
+            margin-bottom: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 100px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-title {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .feature-description {
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        /* Technologies Section */
+        .tech-section {
+            padding: 100px 40px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tech-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .tech-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tech-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tech-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px 30px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #b0b0b0;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .tech-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(10, 10, 10, 0.95);
+            padding: 60px 40px 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: #b0b0b0;
+            text-decoration: none;
+            margin-bottom: 10px;
+            display: block;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #667eea;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
+        }
+
+        /* Floating Elements */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        .floating-element {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-100px) rotate(180deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tech-grid {
+                gap: 15px;
+            }
+            
+            .tech-item {
+                padding: 15px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="three-canvas"></canvas>
+    
+    <div class="floating-elements">
+        <div class="floating-element" style="width: 100px; height: 100px; top: 10%; left: 10%; animation-delay: 0s;"></div>
+        <div class="floating-element" style="width: 150px; height: 150px; top: 20%; right: 10%; animation-delay: -5s;"></div>
+        <div class="floating-element" style="width: 80px; height: 80px; bottom: 20%; left: 15%; animation-delay: -10s;"></div>
+        <div class="floating-element" style="width: 120px; height: 120px; bottom: 30%; right: 20%; animation-delay: -15s;"></div>
+    </div>
+
+    <header>
+        <nav>
+            <div class="logo">ScholarScore</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#technology">Technology</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="home">
+        <div class="hero-section">
+            <h1 class="hero-title">ScholarScore</h1>
+            <p class="hero-subtitle">AI-Powered Student Performance Prediction</p>
+            <p class="hero-description">
+                Harness the power of advanced machine learning to predict student academic performance with precision. 
+                Our CatBoost-powered model analyzes multiple factors to provide accurate insights into student success, 
+                helping educators make data-driven decisions for better educational outcomes.
+            </p>
+            <a href="/predictdata" class="cta-button">
+                <i class="fas fa-chart-line"></i> Predict Marks
+            </a>
+        </div>
+    </main>
+
+    <section id="features" class="features-section">
+        <h2 class="features-title">Key Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="feature-title">Advanced ML Model</h3>
+                <p class="feature-description">
+                    Utilizes CatBoost algorithm for high-accuracy predictions based on comprehensive student data analysis.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3 class="feature-title">Performance Analytics</h3>
+                <p class="feature-description">
+                    Detailed insights and visualizations to understand factors affecting student academic performance.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <h3 class="feature-title">Data Pipeline</h3>
+                <p class="feature-description">
+                    Robust data processing pipeline for cleaning, transforming, and preparing data for accurate predictions.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <h3 class="feature-title">Web Interface</h3>
+                <p class="feature-description">
+                    User-friendly web application built with Flask for easy interaction and seamless user experience.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-title">Reliable Predictions</h3>
+                <p class="feature-description">
+                    Scientifically validated model ensuring consistent and trustworthy performance predictions.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h3 class="feature-title">Fast Processing</h3>
+                <p class="feature-description">
+                    Quick and efficient processing with optimized algorithms for real-time prediction results.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="technology" class="tech-section">
+        <div class="tech-container">
+            <h2 class="tech-title">Built With Cutting-Edge Technology</h2>
+            <div class="tech-grid">
+                <div class="tech-item">Python</div>
+                <div class="tech-item">Flask</div>
+                <div class="tech-item">CatBoost</div>
+                <div class="tech-item">Scikit-learn</div>
+                <div class="tech-item">Pandas</div>
+                <div class="tech-item">NumPy</div>
+                <div class="tech-item">Machine Learning</div>
+                <div class="tech-item">Data Science</div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>About ScholarScore</h3>
+                <p>An innovative AI-powered platform designed to predict student academic performance using advanced machine learning techniques and comprehensive data analysis.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#home">Home</a>
+                <a href="#features">Features</a>
+                <a href="#technology">Technology</a>
+                <a href="/predictdata">Predict Marks</a>
+            </div>
+            <div class="footer-section">
+                <h3>Technology</h3>
+                <a href="#">Machine Learning</a>
+                <a href="#">Data Science</a>
+                <a href="#">Python Development</a>
+                <a href="#">Web Applications</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>Get in touch for more information about ScholarScore and its capabilities.</p>
+                <p><i class="fas fa-envelope"></i> info@scholarscore.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 ScholarScore. All rights reserved. | Powered by Advanced Machine Learning</p>
+        </div>
+    </footer>
+
+    <script>
+        // Three.js Background Animation
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('three-canvas'),
+            alpha: true,
+            antialias: true
+        });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Create particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1000;
+        const positions = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i++) {
+            positions[i] = (Math.random() - 0.5) * 20;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            color: 0x667eea,
+            size: 0.02,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particles);
+
+        // Create floating cubes
+        const cubes = [];
+        for (let i = 0; i < 20; i++) {
+            const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+            const material = new THREE.MeshBasicMaterial({
+                color: new THREE.Color().setHSL(0.6 + Math.random() * 0.2, 0.7, 0.5),
+                transparent: true,
+                opacity: 0.3
+            });
+            const cube = new THREE.Mesh(geometry, material);
+            cube.position.set(
+                (Math.random() - 0.5) * 10,
+                (Math.random() - 0.5) * 10,
+                (Math.random() - 0.5) * 10
+            );
+            cubes.push(cube);
+            scene.add(cube);
+        }
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotate particles
+            particles.rotation.x += 0.0005;
+            particles.rotation.y += 0.001;
+
+            // Animate cubes
+            cubes.forEach((cube, index) => {
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+                cube.position.y += Math.sin(Date.now() * 0.001 + index) * 0.001;
+            });
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // GSAP Animations
+        gsap.registerPlugin();
+
+        // Hero animations
+        gsap.timeline()
+            .to('.hero-title', { duration: 1.2, opacity: 1, y: 0, ease: 'power3.out' })
+            .to('.hero-subtitle', { duration: 1, opacity: 1, y: 0, ease: 'power3.out' }, '-=0.8')
+            .to('.hero-description', { duration: 1, opacity: 1, y: 0, ease: 'power3.out' }, '-=0.6')
+            .to('.cta-button', { duration: 1, opacity: 1, y: 0, scale: 1, ease: 'back.out(1.7)' }, '-=0.4');
+
+        // Feature cards animation on scroll
+        gsap.utils.toArray('.feature-card').forEach((card, index) => {
+            gsap.to(card, {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 80%',
+                    toggleActions: 'play none none reverse'
+                },
+                delay: index * 0.1
+            });
+        });
+
+        // Tech items animation
+        gsap.utils.toArray('.tech-item').forEach((item, index) => {
+            gsap.to(item, {
+                opacity: 1,
+                scale: 1,
+                duration: 0.6,
+                ease: 'back.out(1.7)',
+                scrollTrigger: {
+                    trigger: '.tech-section',
+                    start: 'top 70%',
+                    toggleActions: 'play none none reverse'
+                },
+                delay: index * 0.05
+            });
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(10, 10, 10, 0.95)';
+            } else {
+                header.style.background = 'rgba(10, 10, 10, 0.9)';
+            }
+        });
+    </script>
+</body>
+</html>
